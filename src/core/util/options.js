@@ -283,18 +283,34 @@ function normalizeProps (options: Object, vm: ?Component) {
       val = props[i]
       if (typeof val === 'string') {
         name = camelize(val)
+        /**
+         * camelize(a-bcd-efg) -> return: aBcdEfg
+         */
         res[name] = { type: null }
       } else if (process.env.NODE_ENV !== 'production') {
         warn('props must be strings when using array syntax.')
       }
     }
   } else if (isPlainObject(props)) {
+    /**
+     * isPlainObject 判断是否是一个object
+     */
     for (const key in props) {
       val = props[key]
       name = camelize(key)
       res[name] = isPlainObject(val)
         ? val
         : { type: val }
+      /**
+       * 可能是这样
+       * props: {
+       *  a: Number, //  将会被规范为 -> a : {type: Number}
+       *  b: {
+       *   type: Number,
+       *   default: 0
+       *  }
+       * }
+       */
     }
   } else if (process.env.NODE_ENV !== 'production') {
     warn(
@@ -313,6 +329,9 @@ function normalizeInject (options: Object, vm: ?Component) {
   const inject = options.inject
   if (!inject) return
   const normalized = options.inject = {}
+  /**
+   * normalized 和options.inject 指向同一个 {}, 所以后面没有再对options.inject 赋值
+   */
   if (Array.isArray(inject)) {
     for (let i = 0; i < inject.length; i++) {
       normalized[inject[i]] = { from: inject[i] }
@@ -367,17 +386,32 @@ export function mergeOptions (
   child: Object,
   vm?: Component
 ): Object {
+  /**
+   * parent :当前实例构造函数的options 静态属性
+   * child :当前实例传给构造函数的options
+   * vm :当前实例
+   */
   if (process.env.NODE_ENV !== 'production') {
     checkComponents(child)
+    /**
+     * 检查options.components 里传进来的组件名是否合法
+     */
   }
 
   if (typeof child === 'function') {
     child = child.options
   }
+  /**
+   * 母鸡 啥东西？ new Vue(Vue) ??
+   */
 
   normalizeProps(child, vm)
   normalizeInject(child, vm)
   normalizeDirectives(child)
+  /**
+   * 规范选项
+   */
+
   const extendsFrom = child.extends
   if (extendsFrom) {
     parent = mergeOptions(parent, extendsFrom, vm)

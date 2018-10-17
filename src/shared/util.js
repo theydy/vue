@@ -156,6 +156,13 @@ export function cached<F: Function> (fn: F): F {
 const camelizeRE = /-(\w)/g
 export const camelize = cached((str: string): string => {
   return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '')
+  /**
+   * String.prototype.replace(regex or string, string or fn)
+   * (_, c) => c ? c.toUpperCase() : ''
+   * test: (a-bcd-efg -> aBcdEfg)
+   *  > console.log(_, c) // -b b
+   *  > console.log(_, c) // -e e
+   */
 })
 
 /**

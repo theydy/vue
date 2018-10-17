@@ -43,7 +43,15 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   Vue.set = set
   Vue.delete = del
   Vue.nextTick = nextTick
-
+  /**
+   * Object.create(null) 和 {} 区别 ?
+   * Object.prototype.create = function (o) {
+   *   function F(){}
+   *   F.prototype = o;
+   *   return new F();
+   * }
+   * Object.create 大概是这样, 和 {} 比, 这样创建的对象没有任何原型方法。
+   */
   Vue.options = Object.create(null)
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)

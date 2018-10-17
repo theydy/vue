@@ -14,6 +14,16 @@ let uid = 0
 
 export function initMixin (Vue: Class<Component>) {
   Vue.prototype._init = function (options?: Object) {
+    /**
+     * options 是
+     * new Vue({
+     *  el: '#app',
+     *  data:{
+     *    message: 1
+     *  }
+     * })
+     * 时传进的参数
+     */
     const vm: Component = this
     // a uid
     vm._uid = uid++
@@ -30,6 +40,9 @@ export function initMixin (Vue: Class<Component>) {
     vm._isVue = true
     // merge options
     if (options && options._isComponent) {
+      /**
+       * _isComponent 是创建vue 组件时生成的内部属性
+       */
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
@@ -91,7 +104,20 @@ export function initInternalComponent (vm: Component, options: InternalComponent
 }
 
 export function resolveConstructorOptions (Ctor: Class<Component>) {
+  /**
+   * Ctor 是Vue 的构造函数，options是Vue 类的静态属性，在initGlobalAPI(Vue) 时直接挂载在Vue 上,
+   * 所以用构造函数可以取到options 。
+   * (Ctor 也有可能是Vue 的子类的构造函数)
+   * test:
+   *  > function Vue () {}
+   *  > Vue.options = {test: 'test'}
+   *  > let a = new Vue()
+   *  > a.constructor.options // {test: 'test'}
+   */
   let options = Ctor.options
+  /**
+   * Ctor.super 这是子类才有的属性
+   */
   if (Ctor.super) {
     const superOptions = resolveConstructorOptions(Ctor.super)
     const cachedSuperOptions = Ctor.superOptions

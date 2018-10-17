@@ -52,9 +52,24 @@ export function eventsMixin (Vue: Class<Component>) {
         this.$on(event[i], fn)
       }
     } else {
+      /**
+       * (vm._events[event] || (vm._events[event] = [])).push(fn) 等价于
+       * if (!vm._events[event]) {
+       *   vm._events[event] = []
+       * }
+       * vm._events[event].push(fn)
+       */
       (vm._events[event] || (vm._events[event] = [])).push(fn)
       // optimize hook:event cost by using a boolean flag marked at registration
       // instead of a hash lookup
+      /**
+       * <child
+       *  @hook:beforeCreate="handleChildBeforeCreate"
+       *  @hook:created="handleChildCreated"
+       *  @hook:mounted="handleChildMounted"
+       *  @hook:生命周期钩子
+       * />
+       */
       if (hookRE.test(event)) {
         vm._hasHookEvent = true
       }

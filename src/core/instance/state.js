@@ -57,6 +57,9 @@ export function initState (vm: Component) {
   }
   if (opts.computed) initComputed(vm, opts.computed)
   if (opts.watch && opts.watch !== nativeWatch) {
+    /** 
+     * nativeWatch 是为了兼容Firefox 浏览器的原生watch 函数。
+     */
     initWatch(vm, opts.watch)
   }
 }
@@ -129,6 +132,9 @@ function initData (vm: Component) {
   let i = keys.length
   while (i--) {
     const key = keys[i]
+    /**
+     * props优先级 > data优先级 > methods优先级
+     */
     if (process.env.NODE_ENV !== 'production') {
       if (methods && hasOwn(methods, key)) {
         warn(
@@ -144,7 +150,14 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      /**
+       * isReserved 函数通过判断一个字符串的第一个字符是不是 $ 或 _ 来决定其是否是保留的，
+       * Vue 不会代理键名以 $ 或 _ 开头的字段，因为 Vue 自身的属性和方法都是以 $ 或 _ 开头
+       */
       proxy(vm, `_data`, key)
+      /**
+       * key 不是以 $ 或 _ 开头，执行 proxy 函数，实现实例对象的代理访问
+       */
     }
   }
   // observe data
@@ -316,6 +329,7 @@ export function stateMixin (Vue: Class<Component>) {
   const propsDef = {}
   propsDef.get = function () { return this._props }
   if (process.env.NODE_ENV !== 'production') {
+    // 非生产环境下设置 $data, $props 为只读。如果直接修改会报警告。
     dataDef.set = function (newData: Object) {
       warn(
         'Avoid replacing instance root $data. ' +
@@ -330,6 +344,7 @@ export function stateMixin (Vue: Class<Component>) {
   Object.defineProperty(Vue.prototype, '$data', dataDef)
   Object.defineProperty(Vue.prototype, '$props', propsDef)
 
+  // set, del 从 '../observer/index' 引入
   Vue.prototype.$set = set
   Vue.prototype.$delete = del
 
