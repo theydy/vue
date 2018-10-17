@@ -342,6 +342,9 @@ function normalizeInject (options: Object, vm: ?Component) {
       normalized[key] = isPlainObject(val)
         ? extend({ from: key }, val)
         : { from: val }
+      /**
+       * extend({ from: key }, val) -> {from: key, ...val}
+       */
     }
   } else if (process.env.NODE_ENV !== 'production') {
     warn(
