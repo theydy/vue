@@ -33,6 +33,15 @@ const strats = config.optionMergeStrategies
 if (process.env.NODE_ENV !== 'production') {
   strats.el = strats.propsData = function (parent, child, vm, key) {
     if (!vm) {
+      /**
+       * 通过是否能取到vm 来判断处理的是不是子组件
+       * 拿不到vm 参数，说明是子组件
+       * Sub.options = mergeOptions(
+       *   Super.options,
+       *   extendOptions
+       * )
+       * 子组件调用mergeOptions 是没有传vm 参数
+       */
       warn(
         `option "${key}" can only be used during instance ` +
         'creation with the `new` keyword.'
@@ -46,6 +55,10 @@ if (process.env.NODE_ENV !== 'production') {
  * Helper that recursively merges two data objects together.
  */
 function mergeData (to: Object, from: ?Object): Object {
+  /**
+   * to 和from 是两个data 属性的值
+   * 使用mixins 时, to 是当前组件的data , from 是从mixin 传进来的data
+   */
   if (!from) return to
   let key, toVal, fromVal
   const keys = Object.keys(from)
@@ -112,6 +125,9 @@ strats.data = function (
   childVal: any,
   vm?: Component
 ): ?Function {
+  /**
+   * 也是通过vm 对象来判断是否是子组件
+   */
   if (!vm) {
     if (childVal && typeof childVal !== 'function') {
       process.env.NODE_ENV !== 'production' && warn(
@@ -431,11 +447,18 @@ export function mergeOptions (
   }
   for (key in child) {
     if (!hasOwn(parent, key)) {
+      /**
+       * hasOwn -> Object.prototype.hasOwnProperty(parent, key)
+       */
       mergeField(key)
     }
   }
   function mergeField (key) {
     const strat = strats[key] || defaultStrat
+    /**
+     * const strats = config.optionMergeStrategies
+     * defaultStrat -> return childVal === undefined ? parentVal : childVal
+     */
     options[key] = strat(parent[key], child[key], vm, key)
   }
   return options
