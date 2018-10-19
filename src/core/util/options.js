@@ -58,6 +58,7 @@ function mergeData (to: Object, from: ?Object): Object {
   /**
    * to 和from 是两个data 属性的值
    * 使用mixins 时, to 是当前组件的data , from 是从mixin 传进来的data
+   * 母鸡 正常进来参数应该是 childVal, parentVal, 可是mixins 进来好像反过来了
    */
   if (!from) return to
   let key, toVal, fromVal
@@ -162,6 +163,9 @@ function mergeHook (
 }
 
 LIFECYCLE_HOOKS.forEach(hook => {
+  /**
+   * LIFECYCLE_HOOKS = [beforeCreate, created, beforeMount, mounted...]
+   */
   strats[hook] = mergeHook
 })
 
@@ -179,15 +183,34 @@ function mergeAssets (
   key: string
 ): Object {
   const res = Object.create(parentVal || null)
+  /**
+   * res是一个原型指向parentVal 的空对象
+   * res.__proto__ = parentVal
+   */
   if (childVal) {
     process.env.NODE_ENV !== 'production' && assertObjectType(key, childVal, vm)
+    /**
+     * assertObjectType 检查childVal 是否是一个Object, 如果不是则报warn
+     * key 的值是 components directives filters
+     * childVal 则每次对应取option 传进来的components, directives, filters
+     */
     return extend(res, childVal)
   } else {
     return res
   }
+  /**
+   * 最后返回的res 
+   * {
+   *   ...childVal
+   *   __ptoto__ = parentVal // parentVal 是Vue 的内置components directives filters
+   * }
+   */
 }
 
 ASSET_TYPES.forEach(function (type) {
+  /**
+   * ASSET_TYPES = ['component', 'directive', 'filter']
+   */
   strats[type + 's'] = mergeAssets
 })
 
@@ -197,7 +220,7 @@ ASSET_TYPES.forEach(function (type) {
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
  */
-strats.watch = function (
+strats.watch = function ( 
   parentVal: ?Object,
   childVal: ?Object,
   vm?: Component,
@@ -387,6 +410,9 @@ function normalizeDirectives (options: Object) {
 }
 
 function assertObjectType (name: string, value: any, vm: ?Component) {
+  /**
+   * (key, childVal, vm)
+   */
   if (!isPlainObject(value)) {
     warn(
       `Invalid value for option "${name}": expected an Object, ` +

@@ -6,6 +6,9 @@ import { warn, makeMap, isNative } from '../util/index'
 let initProxy
 
 if (process.env.NODE_ENV !== 'production') {
+  /**
+   * 母鸡 非生产环境 在外面判断了一次，里面又判断一次?
+   */
   const allowedGlobals = makeMap(
     'Infinity,undefined,NaN,isFinite,isNaN,' +
     'parseFloat,parseInt,decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,' +
@@ -29,6 +32,9 @@ if (process.env.NODE_ENV !== 'production') {
 
   if (hasProxy) {
     const isBuiltInModifier = makeMap('stop,prevent,self,ctrl,shift,alt,meta,exact')
+    /**
+     * 检测给定的值是否是内置的事件修饰符
+     */
     config.keyCodes = new Proxy(config.keyCodes, {
       set (target, key, value) {
         if (isBuiltInModifier(key)) {
@@ -46,8 +52,15 @@ if (process.env.NODE_ENV !== 'production') {
     has (target, key) {
       const has = key in target
       const isAllowed = allowedGlobals(key) || (typeof key === 'string' && key.charAt(0) === '_')
+      /**
+       * allowedGlobals 检查key 是否是可以全局访问的关键字
+       * 这样就能在模板中访问Object，Math，Array 这些对象
+       */
       if (!has && !isAllowed) {
         warnNonPresent(target, key)
+        /**
+         * warnNonPresent 渲染模板中使用了key , 但是并没有定义key 这个属性
+         */
       }
       return has || !isAllowed
     }
@@ -63,6 +76,9 @@ if (process.env.NODE_ENV !== 'production') {
   }
 
   initProxy = function initProxy (vm) {
+    /**
+     * hasProxy 判断环境是否支持Proxy 特性
+     */
     if (hasProxy) {
       // determine which proxy handler to use
       const options = vm.$options
