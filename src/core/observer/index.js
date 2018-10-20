@@ -149,6 +149,9 @@ export function defineReactive (
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
+    /**
+     * 母鸡 ??
+     */
     val = obj[key]
   }
 
@@ -185,6 +188,9 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+      /**
+       * 假如newVal 是一个对象或数组, 则需要对新值进行观测
+       */
       dep.notify()
     }
   })

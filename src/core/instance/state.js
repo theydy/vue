@@ -157,6 +157,7 @@ function initData (vm: Component) {
       proxy(vm, `_data`, key)
       /**
        * key 不是以 $ 或 _ 开头，执行 proxy 函数，实现实例对象的代理访问
+       * proxy 将vm[key] 的getter setter 代理访问, 返回vm._data[key] 的值, 这样就能直接通过vm[key] 访问和设置vm._data[key] 的值了
        */
     }
   }

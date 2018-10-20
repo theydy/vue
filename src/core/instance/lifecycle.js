@@ -327,6 +327,9 @@ export function callHook (vm: Component, hook: string) {
   }
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
+    /**
+     * 触发生命周期钩子监听函数
+     */
   }
   popTarget()
 }
