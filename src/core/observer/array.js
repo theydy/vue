@@ -25,6 +25,9 @@ methodsToPatch.forEach(function (method) {
   // cache original method
   const original = arrayProto[method]
   def(arrayMethods, method, function mutator (...args) {
+  /**
+   * def (obj: Object, key: string, val: any, enumerable?: boolean)
+   */
     const result = original.apply(this, args)
     const ob = this.__ob__
     let inserted

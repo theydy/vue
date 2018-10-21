@@ -48,6 +48,9 @@ export class Observer {
       const augment = hasProto
         ? protoAugment
         : copyAugment
+      /**
+       * hasProto 检测运行环境是否支持 __proto__ 属性
+       */
       augment(value, arrayMethods, arrayKeys)
       this.observeArray(value)
     } else {
@@ -213,6 +216,9 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
     return val
   }
   if (key in target && !(key in Object.prototype)) {
+    /**
+     * issues https://github.com/vuejs/vue/issues/6845
+     */
     target[key] = val
     return val
   }
