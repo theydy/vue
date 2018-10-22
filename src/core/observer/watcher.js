@@ -135,6 +135,9 @@ export default class Watcher {
       this.newDeps.push(dep)
       if (!this.depIds.has(id)) {
         dep.addSub(this)
+        /**
+         * this -> Watcher 实例
+         */
       }
     }
   }
@@ -158,6 +161,10 @@ export default class Watcher {
     this.deps = this.newDeps
     this.newDeps = tmp
     this.newDeps.length = 0
+    /**
+     * 母鸡 newDepIds 和newDeps 都清空了为什么要用tmp 暂存？
+     * 难道是因为性能优化？
+     */
   }
 
   /**
