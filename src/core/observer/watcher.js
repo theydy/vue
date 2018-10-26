@@ -52,8 +52,15 @@ export default class Watcher {
     this.vm = vm
     if (isRenderWatcher) {
       vm._watcher = this
+      /**
+       * 每个Vue 实例都有一个renderWatcher 存在vm._watcher 上。
+       */
     }
     vm._watchers.push(this)
+    /**
+     * vm._watchers 存放的是这个Vue 实例中所有的Watcher 实例，
+     * 有renderWatcher 还有通过Vue.prototype.$watcher 或vm.$options.watcher 生成的Watcher。
+     */
     // options
     if (options) {
       this.deep = !!options.deep
@@ -103,10 +110,16 @@ export default class Watcher {
    */
   get () {
     pushTarget(this)
+    /**
+     * Dep.target = this
+     */
     let value
     const vm = this.vm
     try {
       value = this.getter.call(vm, vm)
+      /**
+       * 获得观测对象的值，也触发了观测对象的getter 中收集依赖的操作。
+       */
     } catch (e) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
@@ -172,6 +185,10 @@ export default class Watcher {
    * Will be called when a dependency changes.
    */
   update () {
+    /**
+     * 在观测对象的setter 函数最后调用dep.notify() 触发重新渲染。
+     * notify 函数的主要功能就是遍历dep.subs 中的每一个Watcher 实例的update 方法。
+     */
     /* istanbul ignore else */
     if (this.computed) {
       // A computed property watcher has two modes: lazy and activated.
@@ -193,8 +210,14 @@ export default class Watcher {
       }
     } else if (this.sync) {
       this.run()
+      /**
+       * 真正的更新变化操作在run 函数中，queueWatcher 最后也会调用Watcher 的run 方法。
+       */
     } else {
       queueWatcher(this)
+      /**
+       * 大部分情况下都是走的queueWatcher
+       */
     }
   }
 
@@ -205,11 +228,23 @@ export default class Watcher {
   run () {
     if (this.active) {
       this.getAndInvoke(this.cb)
+      /**
+       * 判断当天Watcher 处于激活状态后，调用getAndInvoke 函数，并把回调Watcher 的回调函数传入其中。
+       * 这里的this.cb 回调函数也就是在数据更新后真正要执行的更新操作。
+       * 对于renderWatcher 来说，this.cd 是一个空函数，因为在getAndInvoke 函数中还会执行一次Watcher 的get 方法，
+       * 这实际上就是renderWatcher 的更新操作了。
+       */
     }
   }
 
   getAndInvoke (cb: Function) {
     const value = this.get()
+    /**
+     * 重新获取一次观测对象的值，对于renderWatcher 来说就相当于更新操作了，不过取值的同时又会触发一次观测对象的getter ，
+     * 但是这次的依赖不会被再次收集，因为depIds 中保存了上次观测对象的dep，监测到相同的dep 会跳过。
+     * renderWatcher 的this.getter 方法是updateComponent 这个函数，返回值是undefined，'
+     * undefined === undefined 所以会跳过下面的if 语句段。
+     */
     if (
       value !== this.value ||
       // Deep watchers and watchers on Object/Arrays should fire even

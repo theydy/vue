@@ -157,7 +157,13 @@ export function mountComponent (
       }
     }
   }
+  /**
+   * 判断一波是否存在render 函数。
+   */
   callHook(vm, 'beforeMount')
+  /**
+   * 执行beforeMount 钩子函数
+   */
 
   let updateComponent
   /* istanbul ignore if */
@@ -182,6 +188,13 @@ export function mountComponent (
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
+    /**
+     * 定义updateComponent 函数，
+     * Vue.prototype._update 在lifecycleMixin(Vue)  src/core/instance/lifecycle.js 中添加，
+     * vm._update 函数的作用是把 vm._render 函数生成的虚拟节点渲染成真正的 DOM。
+     * Vue.prototype._render 在renderMixin(Vue)     src/core/instance/render.js 中添加，
+     * vm._render 函数的作用是调用 vm.$options.render 函数并返回生成的虚拟节点(vnode)。
+     */
   }
 
   // we set this to vm._watcher inside the watcher's constructor
@@ -194,6 +207,9 @@ export function mountComponent (
       }
     }
   }, true /* isRenderWatcher */)
+  /**
+   * 激动人心，碰到Watcher 了。
+   */
   hydrating = false
 
   // manually mounted instance, call mounted on self

@@ -132,7 +132,17 @@ export function queueWatcher (watcher: Watcher) {
   if (has[id] == null) {
     has[id] = true
     if (!flushing) {
+      /**
+       * flushing 是否正在更新的标志
+       */
       queue.push(watcher)
+      /**
+       * 多个不同的观测对象可能收集同一个Watcher 实例，
+       * 所以就造成了同一个Watcher 实例可能在一次事件循环中被多次调用update 方法，
+       * 这里的has[id] 就是为了过滤相同的Watcher ，
+       * 最后添加到queue 中的Watcher 实例都是不同的，
+       * 这些操作都是为了提高Vue 的性能。
+       */
     } else {
       // if already flushing, splice the watcher based on its id
       // if already past its id, it will be run next immediately.
@@ -141,9 +151,26 @@ export function queueWatcher (watcher: Watcher) {
         i--
       }
       queue.splice(i + 1, 0, watcher)
+      /**
+       * 走这段逻辑的典型：计算属性(computed)
+       * 如果queue 正在执行更新操作，则通过index 和id 寻找这个Watcher 实例应该插入的位置，
+       * index 是queue 当前正在执行更新watcher 的下标，是个全局变量，
+       * queue 在执行更新前会按照watcher.id 排序，
+       * 所以跳出while 循环有两个可能
+       * 一、i <= index 说明当前插入进来的watcher 的id 很小，但是queue 需要按照watcher id
+       * 从小到大顺序执行，所以虽然会把当前wather 插入到queue 中，但是这个watcher 要在下一个
+       * 更新中才会执行。
+       * 二、queue[i].id <= watcher.id ，此时插入queue 中的watcher ，index 还没有执行到这个位置，
+       * 所以这个watcher 会在这个更新中执行。
+       */
     }
     // queue the flush
     if (!waiting) {
+      /**
+       * 在每次更新周期中，这段代码只会执行一次，主要功能相当于定了个计时器预约执行更新操作，
+       * 下次更新周期开始是，会执行resetSchedulerState 函数，
+       * 在resetSchedulerState 函数中会把has, queue, index, fleshing, waiting 等置回初值。
+       */
       waiting = true
 
       if (process.env.NODE_ENV !== 'production' && !config.async) {
@@ -151,6 +178,14 @@ export function queueWatcher (watcher: Watcher) {
         return
       }
       nextTick(flushSchedulerQueue)
+      /**
+       * nextTick 将flushSchedulerQueue 函数加到微任务队列
+       * (前提是浏览器支持promise，如果不支持promise 则
+       * 通过setImmediate, MessageChannel, setTimeout 加入到宏任务)，
+       * 所以一般来说一次事件循环最多执行一次更新操作。
+       * flushSchedulerQueue
+       * queue 中的watcher 在这个函数中执行更新
+       */
     }
   }
 }
