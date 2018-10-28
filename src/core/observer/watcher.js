@@ -258,6 +258,9 @@ function _traverse (val: any, seen: ISet) {
     }
     seen.add(depId)
   }
+  /**
+   * seen 收集depId 是为了防止循环引用下出现的死循环。
+   */
   if (isA) {
     i = val.length
     while (i--) _traverse(val[i], seen)
@@ -266,4 +269,7 @@ function _traverse (val: any, seen: ISet) {
     i = keys.length
     while (i--) _traverse(val[keys[i]], seen)
   }
+  /**
+   * 循环遍历一遍，保证每个元素都能执行一遍getter 操作，收集依赖。
+   */
 }
