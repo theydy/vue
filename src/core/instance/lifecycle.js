@@ -218,6 +218,9 @@ export function mountComponent (
     vm._isMounted = true
     callHook(vm, 'mounted')
   }
+  /**
+   * vm.$vnode 表示 Vue 实例的父虚拟 Node，所以它为 Null 则表示当前是根 Vue 的实例
+   */
   return vm
 }
 
