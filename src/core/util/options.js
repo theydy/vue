@@ -57,8 +57,9 @@ if (process.env.NODE_ENV !== 'production') {
 function mergeData (to: Object, from: ?Object): Object {
   /**
    * to 和from 是两个data 属性的值
-   * 使用mixins 时, to 是当前组件的data , from 是从mixin 传进来的data
-   * 母鸡 正常进来参数应该是 childVal, parentVal, 可是mixins 进来好像反过来了
+   * 进来参数顺序是 childVal, parentVal，
+   * 使用mixins 时，会先执行mergeData(mixinVal, parentVal)，将mixins 上的options 合并到组件实例的options 上，
+   * 然后继续执行，又会接着合并组件本省的options，mergeData(childVal, parentVal)，这时的parentVal 是合并了mixins 的options。
    */
   if (!from) return to
   let key, toVal, fromVal
