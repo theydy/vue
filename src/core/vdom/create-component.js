@@ -110,10 +110,18 @@ export function createComponent (
   }
 
   const baseCtor = context.$options._base
+  /**
+   * 即相当于：baseCtor = Vue
+   * 在src/core/global-api/index.js 中
+   * Vue.options._base = Vue
+   */
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
+    /**
+     * 构造子类构造函数
+     */
   }
 
   // if at this stage it's not a constructor or an async component factory,
@@ -184,6 +192,9 @@ export function createComponent (
 
   // install component management hooks onto the placeholder node
   installComponentHooks(data)
+  /**
+   * 安装组件钩子函数
+   */
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag
@@ -193,6 +204,10 @@ export function createComponent (
     { Ctor, propsData, listeners, tag, children },
     asyncFactory
   )
+  /**
+   * 实例化VNode
+   * 和普通元素节点的VNode 不同，组件的VNode 是没有children 的。
+   */
 
   // Weex specific: invoke recycle-list optimized @render function for
   // extracting cell-slot template.
@@ -226,11 +241,20 @@ export function createComponentInstanceForVnode (
 function installComponentHooks (data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
+    /**
+     * const hooksToMerge = Object.keys(componentVNodeHooks)
+     */
     const key = hooksToMerge[i]
     const existing = hooks[key]
     const toMerge = componentVNodeHooks[key]
     if (existing !== toMerge && !(existing && existing._merged)) {
       hooks[key] = existing ? mergeHook(toMerge, existing) : toMerge
+      /**
+       * 把componentVNodeHooks 上的函数hook 函数合并到data 上，
+       * 这里的hook 包括（init, prepatch, insert, destroy）
+       * 如果data 上原本就有某个钩子函数，则通过执行mergeHook 做合并，
+       * 结果就是依次执行两个钩子函数。
+       */
     }
   }
 }

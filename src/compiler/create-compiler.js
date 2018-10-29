@@ -37,8 +37,14 @@ export function createCompilerCreator (baseCompile: Function): Function {
           }
         }
       }
+      /**
+       * 合并选项，生成finalOptions
+       */
 
       const compiled = baseCompile(template, finalOptions)
+      /**
+       * baseCompile 是src/compiler/index.js 中定义。
+       */
       if (process.env.NODE_ENV !== 'production') {
         errors.push.apply(errors, detectErrors(compiled.ast))
       }

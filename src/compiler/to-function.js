@@ -34,6 +34,13 @@ export function createCompileToFunctionFn (compile: Function): Function {
       // detect possible CSP restriction
       try {
         new Function('return 1')
+        /**
+         * 将模板字符串编译成渲染函数依赖new Function()
+         * 所以会检测是否支持new Function()
+         * 如果不支持，则提示warn，解决方案有两个
+         * 1. 放宽CSP 策略(内容安全策略)
+         * 2. 预编译
+         */
       } catch (e) {
         if (e.toString().match(/unsafe-eval|CSP/)) {
           warn(
@@ -54,6 +61,9 @@ export function createCompileToFunctionFn (compile: Function): Function {
     if (cache[key]) {
       return cache[key]
     }
+    /**
+     * 为了缓存编译结果，防止重复编译，提升性能。
+     */
 
     // compile
     const compiled = compile(template, options)
@@ -76,6 +86,9 @@ export function createCompileToFunctionFn (compile: Function): Function {
     const res = {}
     const fnGenErrors = []
     res.render = createFunction(compiled.render, fnGenErrors)
+    /**
+     * createFunction -> return new Function(compiled.render)
+     */
     res.staticRenderFns = compiled.staticRenderFns.map(code => {
       return createFunction(code, fnGenErrors)
     })
@@ -95,5 +108,8 @@ export function createCompileToFunctionFn (compile: Function): Function {
     }
 
     return (cache[key] = res)
+    /**
+     * 返回结果的同时，也要把编译结果保存进cache 中。
+     */
   }
 }

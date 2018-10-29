@@ -67,7 +67,15 @@ Vue.prototype.$mount = function (
         shouldDecodeNewlinesForHref,
         delimiters: options.delimiters,
         comments: options.comments
+        /**
+         * delimiters 和comments 只在完整版的Vue 中用到。
+         */
       }, this)
+      /**
+       * compileToFunctions 函数传的第一个参数就是 template 模板
+       * compileToFunctions 的真实定义是src/compiler/to-function.js 文件中
+       * createCompileToFunctionFn 函数返回的compileToFunctions 函数。
+       */
       options.render = render
       options.staticRenderFns = staticRenderFns
 
