@@ -206,7 +206,7 @@ export function createComponent (
   )
   /**
    * 实例化VNode
-   * 和普通元素节点的VNode 不同，组件的VNode 是没有children 的。
+   * 和普通元素节点的VNode 不同，组件的VNode 是没有children 的，但是有一个componentOptions 参数即{ Ctor, propsData, listeners, tag, children }。
    */
 
   // Weex specific: invoke recycle-list optimized @render function for
