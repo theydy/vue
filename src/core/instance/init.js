@@ -79,6 +79,9 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     if (vm.$options.el) {
+      /**
+       * 组件没有el 属性，所以不会再这里调用$mount 函数
+       */
       vm.$mount(vm.$options.el)
     }
   }

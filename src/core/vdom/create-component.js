@@ -49,6 +49,9 @@ const componentVNodeHooks = {
         activeInstance
       )
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
+      /**
+       * 手动调用$mount
+       */
     }
   },
 
@@ -236,6 +239,9 @@ export function createComponentInstanceForVnode (
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
   return new vnode.componentOptions.Ctor(options)
+  /**
+   * 这里实例化组件实例，componentOptions.Ctor 存放的就是子类的Sub 的构造函数。
+   */
 }
 
 function installComponentHooks (data: VNodeData) {
